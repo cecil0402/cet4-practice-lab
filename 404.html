@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正在返回首页…</title>
+  <script>
+    (function () {
+      var parts = location.pathname.split('/').filter(Boolean);
+      var base = parts.length > 1 ? '/' + parts[0] + '/' : '/';
+      location.replace(base);
+    })();
+  </script>
+</head>
+<body>
+  <p>正在返回 <a href="./">CET-4 四级刷题实验室</a>…</p>
+</body>
+</html>

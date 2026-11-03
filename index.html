@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2e4f">
+  <meta name="description" content="CET-4 四级刷题实验室：原创题库、模拟考试、400个四级核心词、900句例句、100个固定搭配、80个短语动词、40组易混词、错题本与学习数据。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="四级刷题">
+  <meta name="format-detection" content="telephone=no">
+  <title>CET-4 四级刷题实验室</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M8 6h8"/><path d="M8 10h6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 1.8"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4V3Z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12"/><path d="m18 6-12 12"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.9 19.1 1.4-1.4"/><path d="m17.7 6.3 1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h11l-1.5 4L16 12H5"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="m6 7 1 14h10l1-14"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 21V9"/><path d="m7 14 5-5 5 5"/><path d="M4 3h16"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/><path d="m13.5 7.5 3 3"/></symbol>
+    <symbol id="i-languages" viewBox="0 0 24 24"><path d="M4 5h10"/><path d="M9 3v2c0 4-2 7-5 9"/><path d="M5 9c1 2 3 4 5 5"/><path d="m13 20 4-10 4 10"/><path d="M14.5 16h5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5"/><path d="M9 2h6"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">C4</div>
+        <div class="brand-copy">
+          <strong>四级刷题实验室</strong>
+          <span>CET-4 PRACTICE LAB</span>
+        </div>
+        <button class="mobile-close" id="mobile-close" aria-label="关闭菜单">×</button>
+      </div>
+
+      <div class="side-label">学习空间</div>
+      <nav class="nav" id="main-nav">
+        <a href="#/home" data-nav="home"><svg class="icon"><use href="#i-home"></use></svg><span>首页</span></a>
+        <a href="#/practice" data-nav="practice"><svg class="icon"><use href="#i-layers"></use></svg><span>专项练习</span></a>
+        <a href="#/vocab" data-nav="vocab"><svg class="icon"><use href="#i-book"></use></svg><span>四级词汇</span><em class="nav-badge" id="nav-vocab-badge">300</em></a>
+        <a href="#/exam" data-nav="exam"><svg class="icon"><use href="#i-clock"></use></svg><span>模拟考试</span><em class="nav-badge" id="nav-exam-badge" hidden></em></a>
+        <a href="#/wrong" data-nav="wrong"><svg class="icon"><use href="#i-rotate"></use></svg><span>错题本</span><em class="nav-badge" id="nav-wrong-badge">0</em></a>
+        <a href="#/bookmarks" data-nav="bookmarks"><svg class="icon"><use href="#i-bookmark"></use></svg><span>收藏夹</span><em class="nav-badge" id="nav-bookmark-badge">0</em></a>
+      </nav>
+
+      <div class="side-label">我的进度</div>
+      <nav class="nav">
+        <a href="#/stats" data-nav="stats"><svg class="icon"><use href="#i-chart"></use></svg><span>学习数据</span></a>
+        <a href="#/settings" data-nav="settings"><svg class="icon"><use href="#i-settings"></use></svg><span>设置与备份</span></a>
+      </nav>
+
+      <div class="side-progress">
+        <div class="side-progress-head"><span>题库进度</span><strong id="side-progress-text">0%</strong></div>
+        <div class="progress-track"><i id="side-progress-bar" style="width:0%"></i></div>
+        <p id="side-progress-caption">还没有开始，先做 10 道题热身。</p>
+      </div>
+
+      <div class="sidebar-footer">
+        <span class="status-dot"></span>
+        <span>离线可用 · 数据保存在本机</span>
+      </div>
+    </aside>
+
+    <div class="main-shell">
+      <header class="topbar">
+        <button class="icon-btn mobile-menu" id="mobile-menu" aria-label="打开菜单"><svg class="icon"><use href="#i-menu"></use></svg></button>
+        <div class="crumb" id="crumb">首页</div>
+        <div class="top-actions">
+          <div class="streak-pill" title="连续学习天数"><svg class="icon"><use href="#i-spark"></use></svg><span id="top-streak">0</span> 天</div>
+          <button class="icon-btn" id="theme-toggle" aria-label="切换主题"><svg class="icon"><use href="#i-moon"></use></svg></button>
+          <button class="avatar" id="avatar-btn" aria-label="学习数据">C4</button>
+        </div>
+      </header>
+
+      <main id="view" class="view" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+  <div class="modal-root" id="modal-root"></div>
+
+  <noscript>
+    <div class="noscript">这个刷题应用需要启用 JavaScript。请在浏览器设置中允许 JavaScript 后重新打开。</div>
+  </noscript>
+
+  <script src="data.js"></script>
+  <script src="vocab.js"></script>
+  <script src="vocab_extra.js"></script>
+  <script src="vocab_more.js"></script>
+  <script src="vocab_third.js"></script>
+  <script src="collocations.js"></script>
+  <script src="phrasal.js"></script>
+  <script src="confusables.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
