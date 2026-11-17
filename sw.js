@@ -1,5 +1,5 @@
 /* CET-4 Practice Lab — offline app shell */
-const CACHE_NAME = 'cet4-lab-pwa-v2';
+const CACHE_NAME = 'cet4-lab-pwa-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const APP_SHELL = [
   './collocations.js',
   './phrasal.js',
   './confusables.js',
+  './predictions.js',
   './manifest.webmanifest',
   './favicon.svg',
   './icons/apple-touch-icon.png',

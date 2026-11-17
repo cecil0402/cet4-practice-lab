@@ -17,6 +17,7 @@
   const CONFUSABLES = (window.CET4_CONFUSABLES && Array.isArray(window.CET4_CONFUSABLES.items))
     ? window.CET4_CONFUSABLES.items
     : [];
+  const WRITING_PREDICTIONS = window.CET4_WRITING_PREDICTIONS || null;
   VOCAB_BASE.forEach((entry) => {
     entry.examples = [{ collocation: entry.collocation, sentence: entry.sentence, zh: entry.zh }];
     if (VOCAB_EXTRA[entry.word]) entry.examples.push(VOCAB_EXTRA[entry.word]);
@@ -1699,7 +1700,14 @@
 
   function renderWritingList() {
     view.innerHTML = `
-      ${pageHead('写作训练', '两篇任务，覆盖建议书与议论文。先限时写，再看范文与评分标准；范文放在答案区，不干扰动笔。', `<a class="btn btn-ghost" href="#/practice">${icon('arrow-left')} 返回专项</a>`)}
+      ${pageHead('写作训练', '两篇任务，覆盖建议书与议论文。先限时写，再看范文与评分标准；范文放在答案区，不干扰动笔。', `<a class="btn btn-ghost" href="#/practice">${icon('arrow-left')} 返回专项</a><a class="btn btn-gold" href="#/writing/predictions">${icon('spark')} 真题趋势与预测</a>`)}
+      ${WRITING_PREDICTIONS ? `
+        <a class="writing-prediction-banner" href="#/writing/predictions">
+          <span class="writing-prediction-icon">${icon('spark')}</span>
+          <span><strong>下次四级写作，可能考什么？</strong><em>近三年真题主题梳理 · 6 篇原创范文 · AI / 校园生活 / 职业准备方向预测</em></span>
+          <span class="writing-prediction-arrow">${icon('arrow-right')}</span>
+        </a>
+      ` : ''}
       <div class="group-list">
         ${BANK.writing.map((task, i) => `
           <a class="group-row" href="#/writing/${task.id}" style="${moduleStyle('writing')}">
@@ -1713,6 +1721,67 @@
           </a>
         `).join('')}
       </div>
+    `;
+  }
+
+  function renderWritingPredictions() {
+    if (!WRITING_PREDICTIONS) {
+      view.innerHTML = pageHead('写作趋势与预测', '预测数据没有加载。') + emptyState('内容为空', '请确认 predictions.js 与 index.html 在同一目录。');
+      return;
+    }
+    const data = WRITING_PREDICTIONS;
+    view.innerHTML = `
+      <div class="page-head">
+        <div>
+          <div class="eyebrow">CET-4 WRITING · TRENDS & PREDICTIONS</div>
+          <h1 class="page-title">写作真题趋势与预测</h1>
+          <p class="page-subtitle">先把近几年的真题主题拆开看，再用原创范文练习“怎么想、怎么组织、怎么表达”。预测只用于安排复习优先级，不是泄题。</p>
+        </div>
+        <div class="page-head-actions"><a class="btn btn-ghost" href="#/writing">${icon('arrow-left')} 返回写作</a><a class="btn btn-gold" href="CET4写作趋势预测与范文.docx" download>${icon('download')} 打印版</a></div>
+      </div>
+
+      <div class="prediction-note">${icon('spark')}<span><strong>使用方式：</strong>先遮住范文，按题目限时写 30 分钟；再对照“思路”和“亮点表达”修改。不要整篇背诵模板，考场上一旦题目换了角度，模板会变成负担。</span></div>
+
+      <section class="panel">
+        <div class="panel-head"><h3>近三年真题主题（公开考后整理）</h3><span class="small muted">题目已改写，不逐字复制原题</span></div>
+        <div class="prediction-table-wrap">
+          <table class="prediction-table">
+            <thead><tr><th>时间</th><th>主题</th><th>命题特征</th></tr></thead>
+            <tbody>${data.trends.map((t) => `<tr><td><b>${esc(t.period)}</b></td><td>${esc(t.topics)}</td><td>${esc(t.feature)}</td></tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="section-head"><div><h2>下一次考试：优先准备什么</h2><p>按“出现频率 + 近期轮换 + 可写性”排序，概率仅为复习参考。</p></div></div>
+      <section class="prediction-grid">
+        ${data.predictions.map((p) => `
+          <article class="prediction-card ${p.priority === '高' ? 'high' : ''}">
+            <div class="prediction-card-top"><span class="chip ${p.priority === '高' ? 'gold' : ''}">${esc(p.priority)}优先</span><span class="prediction-prob">${esc(p.probability)}</span></div>
+            <h3>${esc(p.theme)}</h3>
+            <p>${esc(p.reason)}</p>
+            <div class="prediction-angles">${p.angles.map((a) => `<span>${esc(a)}</span>`).join('')}</div>
+          </article>
+        `).join('')}
+      </section>
+
+      <div class="section-head"><div><h2>6 篇原创范文</h2><p>每篇 138—147 词，覆盖近年最常见的“建议、权衡、必要性、方法”四种题型。</p></div></div>
+      <div class="prediction-essays">
+        ${data.essays.map((essay, index) => `
+          <article class="prediction-essay">
+            <div class="prediction-essay-head"><span class="prediction-num">${String(index + 1).padStart(2, '0')}</span><div><span class="chip">${esc(essay.theme)}</span><h3>${esc(essay.title)}</h3></div></div>
+            <div class="prediction-prompt"><b>训练题</b>${esc(essay.prompt)}</div>
+            <div class="prediction-text">${nl2p(essay.essay)}</div>
+            <div class="prediction-notes"><b>写作思路</b>${esc(essay.notes)}</div>
+            <div class="expression-chips">${essay.expressions.map((e) => `<span>${esc(e)}</span>`).join('')}</div>
+          </article>
+        `).join('')}
+      </div>
+
+      <section class="panel" style="margin-top:16px">
+        <div class="panel-head"><h3>考场可直接调用的句式</h3><span class="small muted">先改写，再使用</span></div>
+        <ul class="prediction-toolkit">${data.toolkit.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+        <div class="prediction-note" style="margin-top:14px">${icon('eye')}<span>真题主题据新东方等公开考后整理；本页题目为训练性改写，范文为原创。预测不能替代全面准备，建议同时练习校园、科技、文化、职业、健康五个方向。</span></div>
+      </section>
     `;
   }
 
@@ -2509,7 +2578,7 @@
           <h2>关于题库</h2>
           <p>${esc(BANK.meta.title)} · v${esc(BANK.meta.version)}</p>
           <div class="about-list">
-            <div><b>内容：</b>2 篇写作、6 篇听力、2 篇选词填空、2 篇长篇阅读、4 篇仔细阅读、2 段翻译。</div>
+            <div><b>内容：</b>2 篇写作、6 篇听力、2 篇选词填空、2 篇长篇阅读、4 篇仔细阅读、2 段翻译；另附写作趋势与 6 篇原创范文。</div>
             <div><b>结构：</b>82 道客观题，答案、解析与听力原文均内置。</div>
             <div><b>词汇：</b>400 个四级高频核心词、900 句搭配例句，另附 100 个固定搭配、80 个短语动词和 40 组易混词。</div>
             <div><b>说明：</b>本应用使用原创模拟题库；历年真题原文与音频通常受版权保护，未内置。后续可在明确授权后扩展真题包。</div>
@@ -2630,7 +2699,8 @@
       else if (parts.length >= 3) renderPracticeGroup(parts[1], parts[2]);
       else renderPracticeHub();
     } else if (root === 'writing') {
-      if (parts[1]) renderWritingTask(parts[1]);
+      if (parts[1] === 'predictions') renderWritingPredictions();
+      else if (parts[1]) renderWritingTask(parts[1]);
       else renderWritingList();
     } else if (root === 'translation') {
       if (parts[1]) renderTranslationTask(parts[1]);
