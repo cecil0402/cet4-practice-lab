@@ -1737,7 +1737,7 @@
           <h1 class="page-title">写作真题趋势与预测</h1>
           <p class="page-subtitle">先把近几年的真题主题拆开看，再用原创范文练习“怎么想、怎么组织、怎么表达”。预测只用于安排复习优先级，不是泄题。</p>
         </div>
-        <div class="page-head-actions"><a class="btn btn-ghost" href="#/writing">${icon('arrow-left')} 返回写作</a><a class="btn btn-gold" href="CET4写作趋势预测与范文.docx" download>${icon('download')} 打印版</a></div>
+        <div class="page-head-actions"><a class="btn btn-ghost" href="#/writing">${icon('arrow-left')} 返回写作</a><a class="btn btn-gold" href="CET4写作趋势预测与范文.pdf" target="_blank" rel="noopener">${icon('download')} PDF 版</a></div>
       </div>
 
       <div class="prediction-note">${icon('spark')}<span><strong>使用方式：</strong>先遮住范文，按题目限时写 30 分钟；再对照“思路”和“亮点表达”修改。不要整篇背诵模板，考场上一旦题目换了角度，模板会变成负担。</span></div>
