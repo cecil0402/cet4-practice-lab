@@ -487,6 +487,7 @@
     const labels = {
       home: '首页',
       practice: '专项练习',
+      translate: '在线翻译',
       vocab: '四级词汇',
       exam: '模拟考试',
       wrong: '错题本',
@@ -1838,10 +1839,12 @@
           <div class="editor-actions">
             <button class="btn btn-soft btn-sm" data-action="mark-done" data-task="${task.id}">${state.tasks[task.id] ? '已完成' : '标记完成'}</button>
           </div>
+          ${translatorPanelHTML('writing-translator', { essayId: 'essay-area', details: true })}
           <div class="notes-box" style="margin-top:14px">写作提示：用 3—4 分钟列提纲，至少留 2 分钟检查主谓一致、时态和拼写。不要只追求“高级词”，准确与自然优先。</div>
         </section>
       </div>
     `;
+    initTranslatorPanel('writing-translator');
   }
 
   function rubricTable(type) {
@@ -1923,10 +1926,248 @@
           <div class="editor-actions">
             <button class="btn btn-soft btn-sm" data-action="mark-done" data-task="${task.id}">${state.tasks[task.id] ? '已完成' : '标记完成'}</button>
           </div>
+          ${translatorPanelHTML('translation-translator', { essayId: 'essay-area', details: true })}
           <div class="notes-box" style="margin-top:14px">翻译提示：遇到不会的词，用解释性表达保证意思完整；不要逐字硬译，也不要漏掉句间的因果或并列关系。</div>
         </section>
       </div>
     `;
+    initTranslatorPanel('translation-translator');
+  }
+
+  // ---------- online translator ----------
+
+  const translatorCache = new Map();
+
+  function decodeEntities(text) {
+    const node = document.createElement('textarea');
+    node.innerHTML = String(text || '');
+    return node.value;
+  }
+
+  function translatorPanelHTML(id, options = {}) {
+    const { essayId = '', details = false, large = false } = options;
+    const body = `
+      <div class="translator-head">
+        <div><span class="eyebrow">ONLINE TRANSLATION · MYMEMORY</span><h3>${large ? '在线翻译' : '边写边译'}</h3></div>
+        <span class="translator-status" data-role="status">等待输入</span>
+      </div>
+      <div class="translator-controls">
+        ${essayId ? `<label class="translator-follow"><input type="checkbox" data-role="follow" checked> 跟随作文光标</label>` : ''}
+        <button type="button" class="translator-swap" data-role="swap">英 → 中</button>
+        <button type="button" class="translator-clear" data-role="clear">清空</button>
+      </div>
+      <textarea class="translator-source" data-role="source" maxlength="1200" placeholder="${essayId ? '在上方作文里写一句英文，把光标停在这句里，译文会自动出现…' : '输入中文或英文，停顿一下就会自动翻译…'}"></textarea>
+      <div class="translator-output" data-role="output"><span class="translator-placeholder">译文会显示在这里。</span></div>
+      <div class="translator-actions">
+        <button type="button" class="btn btn-ghost btn-sm" data-role="copy">复制译文</button>
+        <span class="translator-provider">MyMemory · 机器翻译仅供参考</span>
+      </div>
+      <div class="translator-foot">在线功能：当前句子会发送到 MyMemory。请勿输入隐私或敏感内容；离线时不可用。</div>
+    `;
+    if (details) {
+      return `<details class="translator-panel inline" id="${id}" data-essay="${essayId}">
+        <summary><span>${icon('languages')} 在线翻译 · 边写边看意思</span><em>NEW</em></summary>
+        <div class="translator-body">${body}</div>
+      </details>`;
+    }
+    return `<section class="translator-panel ${large ? 'page' : 'inline'}" id="${id}" data-essay="${essayId}">${body}</section>`;
+  }
+
+  function sentenceAtCursor(textarea) {
+    const text = textarea.value;
+    if (!text.trim()) return '';
+    const pos = Number.isInteger(textarea.selectionStart) ? textarea.selectionStart : text.length;
+    const boundary = (ch) => /[.!?。！？\n]/.test(ch);
+    let start = pos;
+    while (start > 0 && !boundary(text[start - 1])) start -= 1;
+    let end = pos;
+    while (end < text.length && !boundary(text[end])) end += 1;
+    if (end < text.length) end += 1;
+    let sentence = text.slice(start, end).trim();
+    if (sentence.length < 2) {
+      const before = text.lastIndexOf('\n\n', pos);
+      const after = text.indexOf('\n\n', pos);
+      sentence = text.slice(before >= 0 ? before : 0, after >= 0 ? after : text.length).trim();
+    }
+    return sentence;
+  }
+
+  async function requestTranslation(text, direction, signal) {
+    const pair = direction === 'zh-en' ? 'zh-CN|en' : 'en|zh-CN';
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(pair)}`;
+    const response = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const translated = data?.responseData?.translatedText;
+    if (!translated || /MYMEMORY WARNING|QUOTA|NO QUERY|INVALID|PLEASE SELECT/i.test(translated)) {
+      throw new Error('翻译服务暂时不可用');
+    }
+    return decodeEntities(translated).replace(/<[^>]+>/g, '').trim();
+  }
+
+  function initTranslatorPanel(id) {
+    const root = document.getElementById(id);
+    if (!root) return;
+    const source = root.querySelector('[data-role="source"]');
+    const output = root.querySelector('[data-role="output"]');
+    const status = root.querySelector('[data-role="status"]');
+    const follow = root.querySelector('[data-role="follow"]');
+    const swap = root.querySelector('[data-role="swap"]');
+    const clear = root.querySelector('[data-role="clear"]');
+    const copy = root.querySelector('[data-role="copy"]');
+    const essay = root.dataset.essay ? document.getElementById(root.dataset.essay) : null;
+    if (!source || !output) return;
+
+    let direction = 'en-zh';
+    let timer = null;
+    let sequence = 0;
+    let controller = null;
+
+    const isOpen = () => root.tagName !== 'DETAILS' || root.open;
+    const setStatus = (text, tone = '') => {
+      if (!status) return;
+      status.textContent = text;
+      status.dataset.tone = tone;
+    };
+    const showPlaceholder = () => {
+      output.innerHTML = '<span class="translator-placeholder">译文会显示在这里。</span>';
+    };
+    const showResult = (text) => {
+      output.innerHTML = esc(text).replace(/\n/g, '<br>');
+    };
+    const setBusy = (busy) => {
+      root.classList.toggle('is-translating', busy);
+      if (busy) setStatus('翻译中…');
+    };
+
+    async function translate(force = false) {
+      if (!isOpen() || !document.body.contains(root)) return;
+      const text = source.value.trim().slice(0, 450);
+      if (!text) {
+        sequence += 1;
+        showPlaceholder();
+        setStatus('等待输入');
+        return;
+      }
+      if (source.value.trim().length > 450) setStatus('已截取前 450 字符');
+      if (!navigator.onLine) {
+        setStatus('当前离线');
+        output.innerHTML = '<span class="translator-placeholder">连接网络后会自动翻译。</span>';
+        return;
+      }
+      const key = `${direction}:${text}`;
+      if (!force && translatorCache.has(key)) {
+        showResult(translatorCache.get(key));
+        setStatus('已翻译 · 缓存', 'ok');
+        return;
+      }
+
+      const current = ++sequence;
+      controller?.abort();
+      controller = new AbortController();
+      const timeout = setTimeout(() => controller?.abort(), 12000);
+      setBusy(true);
+      try {
+        const translated = await requestTranslation(text, direction, controller.signal);
+        clearTimeout(timeout);
+        if (current !== sequence) return;
+        if (!translated) throw new Error('空译文');
+        translatorCache.set(key, translated);
+        if (translatorCache.size > 60) translatorCache.delete(translatorCache.keys().next().value);
+        showResult(translated);
+        setStatus('已翻译 · MyMemory', 'ok');
+      } catch (error) {
+        clearTimeout(timeout);
+        if (current !== sequence || error.name === 'AbortError') return;
+        setStatus('翻译失败', 'error');
+        output.innerHTML = `<span class="translator-placeholder">${esc(error.message || '请检查网络后重试')} · <button type="button" class="translator-retry" data-role="retry">重试</button></span>`;
+      } finally {
+        if (current === sequence) setBusy(false);
+      }
+    }
+
+    const schedule = (force = false) => {
+      if (!isOpen() || !document.body.contains(root)) return;
+      clearTimeout(timer);
+      timer = setTimeout(() => translate(force), 850);
+    };
+
+    const syncFromEssay = () => {
+      if (!essay || (follow && !follow.checked)) return;
+      const sentence = sentenceAtCursor(essay);
+      if (!sentence) return;
+      if (source.value !== sentence) source.value = sentence;
+      schedule();
+    };
+
+    source.addEventListener('input', () => schedule());
+    source.addEventListener('paste', () => setTimeout(() => schedule(), 0));
+    follow?.addEventListener('change', () => {
+      if (follow.checked) syncFromEssay();
+      else source.focus();
+    });
+    swap?.addEventListener('click', () => {
+      direction = direction === 'en-zh' ? 'zh-en' : 'en-zh';
+      swap.textContent = direction === 'en-zh' ? '英 → 中' : '中 → 英';
+      setStatus('方向已切换');
+      if (source.value.trim()) schedule(true);
+    });
+    clear?.addEventListener('click', () => {
+      sequence += 1;
+      controller?.abort();
+      source.value = '';
+      showPlaceholder();
+      setStatus('等待输入');
+      source.focus();
+    });
+    copy?.addEventListener('click', async () => {
+      const text = output.innerText.trim();
+      if (!text || text === '译文会显示在这里。') {
+        toast('还没有可复制的译文。', 'error');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        toast('译文已复制。');
+      } catch (error) {
+        toast('浏览器未允许复制，请手动选择译文。', 'error');
+      }
+    });
+    output.addEventListener('click', (event) => {
+      if (event.target.closest('[data-role="retry"]')) translate(true);
+    });
+    if (essay) {
+      ['input', 'click', 'keyup'].forEach((eventName) => essay.addEventListener(eventName, () => {
+        if (isOpen()) syncFromEssay();
+      }));
+    }
+    root.addEventListener('toggle', () => {
+      if (root.open) syncFromEssay();
+    });
+    window.addEventListener('online', () => {
+      if (isOpen() && source.value.trim()) schedule(true);
+    });
+  }
+
+  function renderTranslatorPage() {
+    view.innerHTML = `
+      ${pageHead('在线翻译', '边写句子边看意思。可以自由输入，也可以从作文里复制一句；机器翻译用来确认意思和搭配，不要直接整段照抄。', `<a class="btn btn-ghost" href="#/writing">${icon('pen')} 去写作练习</a>`)}
+      <div class="translator-page-grid">
+        <section class="translator-page-card">${translatorPanelHTML('page-translator', { large: true })}</section>
+        <aside class="translator-side">
+          <span class="chip">${icon('spark')} 使用建议</span>
+          <h3>先写完整句，再翻译</h3>
+          <p>翻译器适合确认“我写的这句话是什么意思”，不适合代替你写作文。先自己写，再对照译文检查主谓、时态和搭配。</p>
+          <ul>
+            <li><b>英 → 中：</b>检查自己写的英文是否表达了想说的意思。</li>
+            <li><b>中 → 英：</b>卡住时看一两种表达，再关掉翻译自己重写。</li>
+            <li><b>作文页：</b>写作/翻译任务里也有“边写边看意思”，打开后会跟随光标所在句。</li>
+          </ul>
+          <div class="translator-side-note">在线翻译由 MyMemory 提供；网络不稳定时会显示失败提示，改完句子或点重试即可。</div>
+        </aside>
+      </div>
+    `;
+    initTranslatorPanel('page-translator');
   }
 
   // ---------- listening speech ----------
@@ -2583,6 +2824,7 @@
             <div><b>词汇：</b>400 个四级高频核心词、900 句搭配例句，另附 100 个固定搭配、80 个短语动词和 40 组易混词。</div>
             <div><b>说明：</b>本应用使用原创模拟题库；历年真题原文与音频通常受版权保护，未内置。后续可在明确授权后扩展真题包。</div>
             <div><b>技术：</b>本地 HTML/CSS/JavaScript；可安装为 PWA，首次加载后可离线使用。</div>
+            <div><b>在线翻译：</b>由 MyMemory 提供，需要联网；题库、词汇和模考不受影响。</div>
           </div>
           <div class="setting-row" style="margin-top:10px">
             <div class="setting-copy"><strong>打印版题库</strong><span>同一套题的 Word 文档，适合打印或批注</span></div>
@@ -2705,6 +2947,8 @@
     } else if (root === 'translation') {
       if (parts[1]) renderTranslationTask(parts[1]);
       else renderTranslationList();
+    } else if (root === 'translate') {
+      renderTranslatorPage();
     } else if (root === 'vocab') {
       if (parts[1] === 'flash') renderFlashcards();
       else if (parts[1] === 'quiz') renderVocabQuiz();

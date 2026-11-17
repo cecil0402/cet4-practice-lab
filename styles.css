@@ -897,6 +897,48 @@ h1, h2, h3 { letter-spacing: -.02em; }
 .rubric-table td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.65; }
 .rubric-table td:first-child { color: var(--gold); font-weight: 800; white-space: nowrap; }
 
+/* ---------- online translator ---------- */
+
+.translator-page-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(250px, .45fr); gap: 16px; align-items: start; }
+.translator-page-card { min-width: 0; }
+.translator-panel { padding: 18px 19px; border: 1px solid var(--line); border-radius: 15px; background: var(--card); }
+.translator-panel.page { min-height: 480px; padding: 22px 23px; }
+.translator-panel.inline { margin-top: 14px; padding: 0; overflow: hidden; border-style: dashed; background: color-mix(in srgb, var(--teal) 4%, var(--card)); }
+.translator-panel.inline > summary { display: flex; align-items: center; gap: 8px; padding: 12px 14px; color: var(--teal); cursor: pointer; font-size: 11px; font-weight: 700; list-style: none; }
+.translator-panel.inline > summary::-webkit-details-marker { display: none; }
+.translator-panel.inline > summary .icon { width: 16px; height: 16px; }
+.translator-panel.inline > summary em { margin-left: auto; padding: 2px 6px; border-radius: 4px; color: #7a5d10; background: var(--gold-soft); font-size: 7px; font-style: normal; letter-spacing: .08em; }
+.translator-panel.inline[open] > summary { border-bottom: 1px solid var(--line); }
+.translator-body { padding: 14px; }
+.translator-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.translator-head h3 { margin: 2px 0 0; color: var(--navy); font-size: 17px; }
+.translator-head .eyebrow { font-size: 7.5px; }
+.translator-status { padding: 4px 8px; border-radius: 99px; color: var(--muted); background: var(--card-2); font-size: 8.5px; white-space: nowrap; }
+.translator-status[data-tone="ok"] { color: var(--green); background: var(--green-soft); }
+.translator-status[data-tone="error"] { color: var(--red); background: var(--red-soft); }
+.translator-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 13px 0 9px; }
+.translator-follow { display: inline-flex; align-items: center; gap: 6px; margin-right: auto; color: var(--muted); font-size: 9.5px; cursor: pointer; }
+.translator-follow input { width: 14px; height: 14px; accent-color: var(--teal); }
+.translator-swap, .translator-clear { padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; color: var(--teal); background: var(--card); font-size: 9px; }
+.translator-swap:hover, .translator-clear:hover { border-color: var(--teal); }
+.translator-source { display: block; width: 100%; min-height: 115px; padding: 12px 13px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; outline: none; color: var(--ink); background: var(--paper); font-family: var(--font-serif); font-size: 14px; line-height: 1.7; }
+.translator-source:focus { border-color: var(--teal); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 10%, transparent); }
+.translator-output { min-height: 110px; margin-top: 9px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink-soft); background: var(--card-2); font-family: var(--font-serif); font-size: 14.5px; line-height: 1.8; }
+.translator-panel.page .translator-source { min-height: 230px; font-size: 16px; }
+.translator-panel.page .translator-output { min-height: 230px; font-size: 16px; }
+.translator-placeholder { color: var(--faint); font-family: var(--font-sans); font-size: 10.5px; }
+.translator-actions { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+.translator-provider { color: var(--faint); font-size: 8px; }
+.translator-foot { margin-top: 9px; color: var(--faint); font-size: 8.5px; line-height: 1.55; }
+.translator-retry { padding: 0; border: 0; color: var(--teal); background: transparent; font: inherit; text-decoration: underline; cursor: pointer; }
+.translator-panel.is-translating .translator-output { opacity: .55; }
+.translator-side { padding: 20px; border: 1px solid var(--line); border-radius: 15px; background: var(--card); }
+.translator-side h3 { margin: 13px 0 7px; font-size: 16px; }
+.translator-side p { margin: 0; color: var(--muted); font-size: 10.5px; line-height: 1.7; }
+.translator-side ul { display: grid; gap: 8px; margin: 14px 0 0; padding-left: 16px; color: var(--ink-soft); font-size: 10px; line-height: 1.65; }
+.translator-side li::marker { color: var(--gold); }
+.translator-side-note { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line); color: var(--faint); font-size: 9px; line-height: 1.6; }
+
 /* ---------- writing trends & predictions ---------- */
 
 .writing-prediction-banner { display: flex; align-items: center; gap: 13px; margin-bottom: 14px; padding: 15px 17px; border: 1px solid color-mix(in srgb, var(--gold) 30%, var(--line)); border-radius: 14px; background: linear-gradient(100deg, color-mix(in srgb, var(--gold) 10%, var(--card)), var(--card)); transition: border-color .2s, transform .2s; }
@@ -1390,6 +1432,7 @@ body.exam-active { background: var(--bg); }
   .quick-stats { grid-template-columns: repeat(2, 1fr); }
   .dashboard-lower { grid-template-columns: 1fr; }
   .practice-layout, .practice-layout.listening-layout, .task-layout, .matching-layout { grid-template-columns: 1fr; }
+  .translator-page-grid { grid-template-columns: 1fr; }
   .passage-card, .editor-card, .matching-layout > .panel { position: static; max-height: none; overflow: visible; }
   .exam-layout { grid-template-columns: 1fr; }
   .exam-aside { position: static; grid-row: 1; }
@@ -1452,6 +1495,13 @@ body.exam-active { background: var(--bg); }
   .result-ring-inner strong { font-size: 35px; }
   .exam-hero { grid-template-columns: 1fr; padding: 24px 20px; }
   .exam-hero-side { display: none; }
+  .translator-panel.page { padding: 17px 15px; }
+  .translator-panel.page .translator-source, .translator-panel.page .translator-output { min-height: 155px; font-size: 16px; }
+  .translator-panel { padding: 14px 13px; }
+  .translator-body { padding: 12px 11px; }
+  .translator-follow { width: 100%; margin-right: 0; }
+  .translator-source, .translator-output { font-size: 16px; }
+  .translator-actions { align-items: flex-start; flex-direction: column; gap: 6px; }
   .toast-stack { left: 14px; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); }
   .toast { max-width: none; }
   /* Prevent iOS Safari from zooming when a form control receives focus. */
